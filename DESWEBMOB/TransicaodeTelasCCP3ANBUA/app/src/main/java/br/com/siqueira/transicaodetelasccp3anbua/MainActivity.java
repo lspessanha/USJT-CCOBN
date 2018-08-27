@@ -7,6 +7,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+/**
+ * @author Leonardo Siqueira Pessanha
+ * @R.A. 816123578
+ */
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText mensagemEditText;
