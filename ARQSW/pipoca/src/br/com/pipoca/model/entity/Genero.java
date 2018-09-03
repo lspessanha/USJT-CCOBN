@@ -1,6 +1,9 @@
 package br.com.pipoca.model.entity;
 
+import javax.validation.constraints.NotNull;
+
 public class Genero {
+	@NotNull
 	private int id;
 	private String nome;
 	public int getId() {

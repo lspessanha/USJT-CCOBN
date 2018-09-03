@@ -1,5 +1,7 @@
 package br.com.pipoca.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +23,7 @@ public class ManterFilmesController {
 		return "NovoFilme";
 	}
 	@RequestMapping("/inserir")
-	public ModelAndView inserirFilme(@ModelAttribute("filme") Filme filme) {
+	public ModelAndView inserirFilme(@Valid Filme filme) {
 		ModelAndView andView = new ModelAndView("Resultado");
 		andView.addObject("filme", filme);
 		return andView;
