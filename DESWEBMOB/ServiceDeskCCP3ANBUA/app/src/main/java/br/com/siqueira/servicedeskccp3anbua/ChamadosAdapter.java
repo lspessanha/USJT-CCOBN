@@ -38,12 +38,16 @@ public class ChamadosAdapter extends ArrayAdapter <Chamado> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Chamado deInteresse = chamados.get(position);
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View v = inflater.inflate(R.layout.list_item, parent, false);
-        TextView filaDoItemTextView = v.findViewById(R.id.filaDoItemTextView);
-        TextView descricaoDoItemTextView = v.findViewById(R.id.descricaoDoItemTextView);
+
+        if(convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            convertView = inflater.inflate(R.layout.list_item, parent, false);
+        }
+
+        TextView filaDoItemTextView = convertView.findViewById(R.id.filaDoItemTextView);
+        TextView descricaoDoItemTextView = convertView.findViewById(R.id.descricaoDoItemTextView);
         filaDoItemTextView.setText(deInteresse.getFila());
         descricaoDoItemTextView.setText(deInteresse.getDescricao());
-        return v;
+        return convertView;
     }
 }
