@@ -1,11 +1,18 @@
 package br.com.pipoca.model.entity;
 
-import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 
 public class Genero {
-	@NotNull
 	private int id;
 	private String nome;
+	private ArrayList<Filme> filmes;
+	
+	public ArrayList<Filme> getFilmes() {
+		return filmes;
+	}
+	public void setFilmes(ArrayList<Filme> filmes) {
+		this.filmes = filmes;
+	}
 	public int getId() {
 		return id;
 	}
@@ -18,6 +25,7 @@ public class Genero {
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
+	
 	
 	@Override
 	public String toString() {

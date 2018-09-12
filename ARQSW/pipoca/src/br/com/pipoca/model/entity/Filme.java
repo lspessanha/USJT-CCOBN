@@ -3,19 +3,39 @@ package br.com.pipoca.model.entity;
 import java.util.Date;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class Filme {
-	private int id;
+	
 	@NotNull
+	private int id;
+	
+	@NotNull
+	@Size(min=2,max=100, message= "Tamanho entre 2 e 100 caracteres")
 	private String titulo;
+	
+	@NotNull
+	@Size(min=20,max=4000 , message="Tamanho entre 20 e 4000 caracteres")
 	private String descricao;
+	
+	@NotNull
 	private double popularidade;
+	
 	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@NotNull
 	private Date dataLancamento;
+	
+	@NotNull
+	@Size(min=5,max=100 , message="Tamanho entre 5 e 100 caracteres")
 	private String posterPath;
+	
+	@NotNull
+	@Size(min=2,max=100 , message="Tamanho entre 2 e 100 caracteres")
 	private String diretor;
+	
+	@NotNull
 	private Genero genero;
 	
 	public int getId() {
