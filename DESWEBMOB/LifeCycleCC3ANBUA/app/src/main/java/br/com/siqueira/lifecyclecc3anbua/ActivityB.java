@@ -9,6 +9,12 @@ import android.widget.TextView;
 import br.com.siqueira.lifecyclecc3anbua.util.StatusTracker;
 import br.com.siqueira.lifecyclecc3anbua.util.Utils;
 
+/**
+ * @author Leonardo Siqueira Pessanha
+ * @R.A. 816123578
+ * @turma CCP3AN-BUA
+ */
+
 public class ActivityB extends AppCompatActivity {
 
     private String mActivityName;

@@ -2,6 +2,12 @@ package br.com.siqueira.lifecyclecc3anbua.util;
 
 import java.util.*;
 
+/**
+ * @author Leonardo Siqueira Pessanha
+ * @R.A. 816123578
+ * @turma CCP3AN-BUA
+ */
+
 public class StatusTracker {
     private Map<String, String> mStatusMap;
     private List<String> mMethodList;

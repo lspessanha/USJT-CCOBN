@@ -5,6 +5,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 
+/**
+ * @author Leonardo Siqueira Pessanha
+ * @R.A. 816123578
+ * @turma CCP3AN-BUA
+ */
+
 public class DialogActivity extends AppCompatActivity {
 
     @Override

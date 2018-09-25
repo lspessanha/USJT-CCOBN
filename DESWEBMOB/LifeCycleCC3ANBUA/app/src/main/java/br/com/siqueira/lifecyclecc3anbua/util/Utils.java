@@ -5,6 +5,12 @@ import android.widget.TextView;
 
 import java.util.List;
 
+/**
+ * @author Leonardo Siqueira Pessanha
+ * @R.A. 816123578
+ * @turma CCP3AN-BUA
+ */
+
 public class Utils {
     private static br.com.siqueira.lifecyclecc3anbua.util.StatusTracker mStatusTracker =  br.com.siqueira.lifecyclecc3anbua.util.StatusTracker.getInstance();
 
