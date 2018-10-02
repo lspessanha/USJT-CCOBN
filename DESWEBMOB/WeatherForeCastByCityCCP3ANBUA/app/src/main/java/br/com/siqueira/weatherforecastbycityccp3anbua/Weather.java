@@ -13,9 +13,7 @@ public class Weather {
     public final String description;
     public final String iconURL;
 
-    public Weather(long timeStamp,double minTemp,double maxTemp,
-                   double humidity,String description,String iconName){
-
+    public Weather(long timeStamp, double minTemp, double maxTemp, double humidity, String description, String iconName){
 
         NumberFormat numberFormat = NumberFormat.getInstance();
         numberFormat.setMaximumFractionDigits(0);
@@ -31,10 +29,8 @@ public class Weather {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis((timeStamp *1000));
         TimeZone tz = TimeZone.getDefault();
-        calendar.add(Calendar.MILLISECOND,tz.getOffset(calendar.getTimeInMillis()));
+        calendar.add(Calendar.MILLISECOND, tz.getOffset(calendar.getTimeInMillis()));
 
-
-        return
-                new SimpleDateFormat("EEEE").format(calendar.getTime());
+        return new SimpleDateFormat("EEEE").format(calendar.getTime());
     }
 }
