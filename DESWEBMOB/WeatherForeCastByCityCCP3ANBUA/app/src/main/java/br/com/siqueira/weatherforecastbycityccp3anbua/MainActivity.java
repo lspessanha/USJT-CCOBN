@@ -1,6 +1,7 @@
 package br.com.siqueira.weatherforecastbycityccp3anbua;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,6 +15,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,91 +30,91 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<Weather> weatherList = new ArrayList<>();
-    private WeatherArrayAdapter weatherArrayAdapter;
+    private EditText locationEditText;
     private ListView weatherListView;
-
+    private WeatherArrayAdapter adapter;
+    private List<Weather> weatherList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        weatherListView = findViewById(R.id.weatherListView);
+        weatherList = new ArrayList<>();
+        adapter = new WeatherArrayAdapter(this, weatherList);
+        weatherListView.setAdapter(adapter);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        weatherListView = (ListView) findViewById(R.id.weatherListView);
-        weatherArrayAdapter = new WeatherArrayAdapter(this, weatherList);
-        weatherListView.setAdapter(weatherArrayAdapter);
+        locationEditText = findViewById(R.id.locationEditText);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
-            EditText locationEditText =
-                    (EditText) findViewById(R.id.locationEditText);
-
             @Override
             public void onClick(View view) {
-                new Thread(new Runnable(){
-                    @Override
-                    public void run() {
-                        try{
-                            String cidade = locationEditText.getEditableText().toString();
-                            URL url = createURL(cidade);
-                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                            InputStream stream = connection.getInputStream();
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-                            String linha = null;
-                            StringBuilder stringBuilder = new StringBuilder("");
-                            while ((linha = reader.readLine()) != null){
-                                stringBuilder.append(linha);
-                            }
-                            String json = stringBuilder.toString();
-                            Toast.makeText(MainActivity.this, json, Toast.LENGTH_SHORT).show();
-                        } catch(Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
+                String cidade = locationEditText.getEditableText().toString();
+                WebServiceClient client = new WebServiceClient();
+                client.execute(cidade);
             }
         });
     }
 
-    private void dismissKeyboard (View view){
-        InputMethodManager imm = (InputMethodManager)
-                getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(),0);
+    private class WebServiceClient extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... cidade) {
+            try{
+                URL url = createURL(cidade[0]);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                InputStream stream = connection.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+                String linha = null;
+                StringBuilder stringBuilder = new StringBuilder("");
+                while((linha = reader.readLine()) != null){
+                    stringBuilder.append(linha);
+                }
+                String json = stringBuilder.toString();
+                return json;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+    //@Override
+    protected void onPostExecute(String json){
+//        Toast.makeText(MainActivity.this, json, Toast.LENGTH_SHORT).show();
+        try {
+            weatherList.clear();
+            JSONObject previsoes = new JSONObject(json);
+            JSONArray list = previsoes.getJSONArray("list");
+            for (int i = 0; i < list.length(); i++){
+                JSONObject previsao = list.getJSONObject(i);
+                long dt = previsao.getLong("dt");
+                JSONObject main = previsao.getJSONObject("main");
+                double temp_min = main.getDouble("temp_min");
+                double temp_max = main.getDouble("temp_max");
+                int humidity = main.getInt("humidity");
+                String description = previsao.getJSONArray("weather")
+                        .getJSONObject(0)
+                        .getString("description");
+                String icon = previsao.getJSONArray("weather")
+                        .getJSONObject(0)
+                        .getString("icon");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
-    private URL createURL (String city){
+    private URL createURL (String cidade){
         String apiKey = getString (R.string.api_key);
         String baseUrl = getString(R.string.web_service_url);
+
         try{
-            String urlString = baseUrl + URLEncoder.encode (city, "UTF-8") + "&units=metric&APPID=" + apiKey;
+            String urlString = baseUrl + URLEncoder.encode (cidade, "UTF-8") + "&units=metric&APPID=" + apiKey;
             return new URL(urlString);
         }
         catch( Exception e){
             e.printStackTrace();
+            return null;
         }
-        return null;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }
