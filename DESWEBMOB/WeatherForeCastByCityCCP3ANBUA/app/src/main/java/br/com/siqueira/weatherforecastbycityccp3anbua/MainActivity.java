@@ -1,6 +1,5 @@
 package br.com.siqueira.weatherforecastbycityccp3anbua;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,7 +9,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -20,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -77,39 +76,39 @@ public class MainActivity extends AppCompatActivity {
                 return null;
             }
         }
-    }
-    //@Override
-    protected void onPostExecute(String json){
-//        Toast.makeText(MainActivity.this, json, Toast.LENGTH_SHORT).show();
-        try {
-            weatherList.clear();
-            JSONObject previsoes = new JSONObject(json);
-            JSONArray list = previsoes.getJSONArray("list");
-            for (int i = 0; i < list.length(); i++){
-                JSONObject previsao = list.getJSONObject(i);
-                long dt = previsao.getLong("dt");
-                JSONObject main = previsao.getJSONObject("main");
-                double temp_min = main.getDouble("temp_min");
-                double temp_max = main.getDouble("temp_max");
-                int humidity = main.getInt("humidity");
-                String description = previsao.getJSONArray("weather")
-                        .getJSONObject(0)
-                        .getString("description");
-                String icon = previsao.getJSONArray("weather")
-                        .getJSONObject(0)
-                        .getString("icon");
+        @Override
+        protected void onPostExecute(String json) {
+            //Toast.makeText(MainActivity.this, json, Toast.LENGTH_SHORT).show();
+            try {
+                weatherList.clear();
+                JSONObject previsoes = new JSONObject(json);
+                JSONArray list = previsoes.getJSONArray("list");
+                for (int i = 0; i < list.length(); i++){
+                    JSONObject previsao = list.getJSONObject(i);
+                    long dt = previsao.getLong("dt");
+                    JSONObject main = previsao.getJSONObject("main");
+                    double temp_min = main.getDouble("temp_min");
+                    double temp_max = main.getDouble("temp_max");
+                    int humidity = main.getInt ("humidity");
+                    String description = previsao.getJSONArray("weather")
+                            .getJSONObject(0)
+                            .getString("description");
+                    String icon =  previsao.getJSONArray("weather")
+                            .getJSONObject(0)
+                            .getString("icon");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 
     private URL createURL (String cidade){
-        String apiKey = getString (R.string.api_key);
-        String baseUrl = getString(R.string.web_service_url);
-
         try{
-            String urlString = baseUrl + URLEncoder.encode (cidade, "UTF-8") + "&units=metric&APPID=" + apiKey;
+            String apiKey = getString(R.string.api_key);
+            String baseURL = getString(R.string.web_service_url);
+            String urlString = baseURL + URLEncoder.encode(cidade, "UTF-8");
+            urlString += "&units=metric&APPID=" + apiKey;
             return new URL(urlString);
         }
         catch( Exception e){
