@@ -1,5 +1,8 @@
 package br.com.siqueira.weatherforecastbycityccp3anbua;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,8 +13,11 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +25,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -32,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText locationEditText;
     private ListView weatherListView;
     private WeatherArrayAdapter adapter;
-    private List<Weather> weatherList;
+    private List <Weather> weatherList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,13 +57,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String cidade = locationEditText.getEditableText().toString();
+                /*new Thread(new Runnable(){
+                    @Override
+                    public void run() {
+                }).start();*/
                 WebServiceClient client = new WebServiceClient();
                 client.execute(cidade);
+
+
+
             }
         });
     }
 
-    private class WebServiceClient extends AsyncTask<String, Void, String> {
+
+
+    private class WebServiceClient extends AsyncTask <String, Void, String>{
         @Override
         protected String doInBackground(String... cidade) {
             try{
@@ -65,13 +81,13 @@ public class MainActivity extends AppCompatActivity {
                 InputStream stream = connection.getInputStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
                 String linha = null;
-                StringBuilder stringBuilder = new StringBuilder("");
-                while((linha = reader.readLine()) != null){
+                StringBuilder stringBuilder = new StringBuilder ("");
+                while ((linha = reader.readLine()) != null){
                     stringBuilder.append(linha);
                 }
-                String json = stringBuilder.toString();
-                return json;
-            } catch (Exception e) {
+                return stringBuilder.toString();
+            }
+            catch (Exception e){
                 e.printStackTrace();
                 return null;
             }
@@ -81,7 +97,12 @@ public class MainActivity extends AppCompatActivity {
             //Toast.makeText(MainActivity.this, json, Toast.LENGTH_SHORT).show();
             try {
                 weatherList.clear();
-                JSONObject previsoes = new JSONObject(json);
+                Gson gson = new Gson();
+                ForecastData previsoes = gson.fromJson(json, ForecastData.class);
+                for (WeatherData data : previsoes.getList()) {
+                    weatherList.add(new Weather(data));
+                }
+                /*JSONObject previsoes = new JSONObject(json);
                 JSONArray list = previsoes.getJSONArray("list");
                 for (int i = 0; i < list.length(); i++){
                     JSONObject previsao = list.getJSONObject(i);
@@ -90,13 +111,16 @@ public class MainActivity extends AppCompatActivity {
                     double temp_min = main.getDouble("temp_min");
                     double temp_max = main.getDouble("temp_max");
                     int humidity = main.getInt ("humidity");
-                    String description = previsao.getJSONArray("weather")
-                            .getJSONObject(0)
-                            .getString("description");
-                    String icon =  previsao.getJSONArray("weather")
-                            .getJSONObject(0)
-                            .getString("icon");
-                }
+                    String description = previsao.getJSONArray("weather").getJSONObject(0).
+                            getString("description");
+                    String icon =  previsao.getJSONArray("weather").getJSONObject(0).
+                            getString("icon");
+                    Weather weather = new Weather(dt,
+                            temp_min, temp_max, humidity,
+                            description, icon);
+                    weatherList.add(weather);
+                }*/
+                adapter.notifyDataSetChanged();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -111,9 +135,10 @@ public class MainActivity extends AppCompatActivity {
             urlString += "&units=metric&APPID=" + apiKey;
             return new URL(urlString);
         }
-        catch( Exception e){
+        catch (Exception e){
             e.printStackTrace();
             return null;
         }
+
     }
 }
